@@ -6,8 +6,9 @@
   "description": "Analyze YouTube comment sentiment",
   "permissions": ["activeTab", "scripting", "storage", "clipboardWrite"],
   "host_permissions": [
-    "http://127.0.0.1:7860/*"
-  ],
+  "http://127.0.0.1:7860/*",
+  "https://glowing-potato-q754xg7x4vjfxq56-7860.app.github.dev/*"
+],
   "action": {
     "default_popup": "popup.html"
   }

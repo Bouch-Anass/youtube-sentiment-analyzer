@@ -200,7 +200,7 @@ button.addEventListener("click", async () => {
         }
 
         const response = await fetch(
-            "http://127.0.0.1:7860/predict_batch",
+            "https://glowing-potato-q754xg7x4vjfxq56-7860.app.github.dev/predict_batch",
             {
                 method: "POST",
                 headers: {
