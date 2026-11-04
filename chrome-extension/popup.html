@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            width: 350px;
+            padding: 16px;
+            font-family: Arial, sans-serif;
+            color: #222;
+        }
+
+        h3 {
+            margin-top: 0;
+        }
+
+        button, select {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+        }
+
+        #status {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .bar-row {
+            margin: 12px 0;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .bar-bg {
+            height: 12px;
+            background: #eee;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            border-radius: 6px;
+        }
+
+        .positive { background: #22a06b; }
+        .neutral { background: #888; }
+        .negative { background: #e05252; }
+
+        #filter {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        #comments {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .comment {
+            padding: 10px;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .comment p {
+            margin-bottom: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .positive-text { color: #16804f; }
+        .neutral-text { color: #777; }
+        .negative-text { color: #d43d3d; }
+        
+        .controls {
+            display: flex;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .controls button {
+            flex: 1;
+            width: auto;
+            font-size: 12px;
+        }
+
+        body.dark {
+            background: #181b20;
+            color: #eee;
+        }
+
+        body.dark .comment {
+            background: #23272e;
+            border-color: #404651;
+        }
+
+        body.dark #status,
+        body.dark .neutral-text {
+            color: #bbb;
+        }
+
+        body.dark .bar-bg {
+            background: #383d46;
+        }
+
+        body.dark button,
+        body.dark select {
+            background: #2b3039;
+            color: #eee;
+            border: 1px solid #596171;
+        }
+
+    </style>
+</head>
+<body>
+    <h3>YouTube Sentiment Analyzer</h3>
+
+    <button id="scan">Analyze Comments</button>
+
+    <p id="status">Ready</p>
+
+    <div id="chart"></div>
+
+    <select id="filter" disabled>
+        <option value="all">All Comments</option>
+        <option value="positive">Positive</option>
+        <option value="neutral">Neutral</option>
+        <option value="negative">Negative</option>
+    </select>
+    
+    <div class="controls">
+        <button id="theme">Dark Mode</button>
+        <button id="copy" disabled>Copy Results</button>
+        <button id="export" disabled>Export CSV</button>
+    </div>
+
+    <div id="comments"></div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
