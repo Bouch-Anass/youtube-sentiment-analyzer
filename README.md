@@ -225,8 +225,68 @@ Test scenarios included:
 - Add more advanced monitoring and logging.
 - Deploy the API to a cloud hosting service.
 
+
 ## 12. Project Status
 
-The local application is operational.
+The application is operational in both local and cloud environments.
 
-Cloud deployment is not yet implemented.
+- Local deployment: Docker Desktop
+- Cloud deployment: GitHub Codespaces
+- Cloud API: HTTPS on port 7860
+- Chrome extension: Connected to the cloud API
+- Model accuracy: 87.50%
+- Automated API tests: 13 passed
+
+The Codespaces deployment is temporary and requires
+the Codespace to be running.
+
+
+## 13. Cloud Deployment (GitHub Codespaces)
+
+The FastAPI application is containerized with Docker and
+deployed using GitHub Codespaces.
+
+### Deployment
+
+1. Open the GitHub repository.
+2. Select Code > Codespaces > Create codespace on main.
+3. Build the Docker image:
+
+    docker build -t youtube-sentiment-api .
+
+4. Start the container:
+
+    docker run -d --name youtube-sentiment-api -p 7860:7860 youtube-sentiment-api
+
+5. Open the Ports tab.
+6. Set port 7860 visibility to Public.
+7. Copy the generated HTTPS URL.
+
+### API Endpoints
+
+Cloud API:
+
+https://glowing-potato-q754xg7x4vjfxq56-7860.app.github.dev
+
+- GET /health
+- POST /predict_batch
+- GET /docs
+
+### Chrome Extension
+
+The extension communicates with the public API through
+HTTPS.
+
+The production URL is configured in popup.js and
+authorized in manifest.json.
+
+### Availability
+
+GitHub Codespaces is an ephemeral development
+environment, not permanent production hosting.
+
+The API is available while the Codespace and Docker
+container are running.
+
+After a Codespace restart, verify the container,
+port visibility, and API URL before using the extension.
