@@ -1,292 +1,157 @@
-
 # YouTube Sentiment Analyzer
 
-A machine learning application for analyzing YouTube comments and classifying them as positive, neutral, or negative.
+**TP3 : Analyse de sentiment YouTube, du développement au déploiement cloud**
 
-The system consists of a Chrome extension, a FastAPI backend, and a machine learning model deployed locally using Docker.
+Application de classification automatique des commentaires YouTube en trois catégories : **positif, neutre et négatif**. Elle combine une extension Chrome, une API FastAPI et un modèle de machine learning exécuté dans Docker, localement ou dans GitHub Codespaces.
 
-## 1. Project Overview
+## 1. Fonctionnement
 
-YouTube videos can receive thousands of comments, making manual sentiment analysis time-consuming.
-
-This project automates the process by extracting comments from a YouTube page, sending them to a machine learning API, and displaying sentiment predictions and statistics.
-
-## 2. Architecture
-
-YouTube Page
-    |
-    v
-Chrome Extension
-    |
-    v
-FastAPI REST API
-    |
-    v
-TF-IDF + Logistic Regression
-    |
-    v
-Sentiment Predictions
-    |
-    v
-Chrome Extension Dashboard
-
-## 3. Technologies
-
-- Python 3.11
-- Pandas and scikit-learn
-- TF-IDF and Logistic Regression
-- FastAPI and Pydantic
-- Docker
-- JavaScript, HTML, CSS
-- Git and GitHub
-- Pytest
-
-## 4. Dataset
-
-Dataset: Reddit Sentiment Analysis
-
-Source:
-https://github.com/Himanshu-1703/reddit-sentiment-analysis
-
-The dataset contains three sentiment classes:
-
-- -1: Negative
-- 0: Neutral
-- 1: Positive
-
-After cleaning and duplicate removal:
-
-- Total samples: 36,607
-- Training samples: 29,285
-- Testing samples: 7,322
-
-An 80/20 stratified split was used.
-
-## 5. Machine Learning
-
-Text vectorization:
-- TF-IDF
-- Maximum features: 20,000
-- N-gram range: (1, 2)
-
-Classifier:
-- Logistic Regression
-- C = 5
-- class_weight = balanced
-- max_iter = 1000
-
-Logistic Regression was compared with Linear SVM. It was retained for its competitive classification performance and support for probability estimates.
-
-### Final Performance
-
-| Metric | Value |
-|--------|-------|
-| Accuracy | 87.50% |
-| Macro F1 | 0.86 |
-| Negative F1 | 0.80 |
-| Neutral F1 | 0.91 |
-| Positive F1 | 0.88 |
-| Inference (50 comments) | 6.65 ms |
-| Local API response (50 comments) | 21.93 ms |
-
-Inference and API response times were measured locally.
-
-## 6. API
-
-The backend provides two endpoints.
-
-### GET /health
-
-Checks the availability of the API and the trained model.
-
-### POST /predict_batch
-
-Accepts a list of comments and returns:
-
-- Predicted sentiment
-- Confidence score
-- Sentiment counts
-- Sentiment percentages
-
-Example request:
-
-```json
-{
-  "comments": [
-    "This video is amazing",
-    "This is terrible"
-  ]
-}
+```text
+Vidéo YouTube
+    ↓
+Extension Chrome : extraction des commentaires chargés
+    ↓
+API FastAPI : POST /predict_batch
+    ↓
+TF-IDF + régression logistique
+    ↓
+Prédictions, scores de confiance et statistiques
+    ↓
+Interface de l'extension
 ```
 
-## 7. Local Installation
+L'analyse est lancée à la demande. Seuls les commentaires déjà chargés sur la page sont extraits.
 
-### Requirements
+## 2. Technologies
 
-- Python 3.11
-- Google Chrome
-- Docker Desktop
-- Git
+| Composant | Technologie |
+|---|---|
+| Modèle ML | Python 3.11, scikit-learn, TF-IDF, régression logistique |
+| API | FastAPI, Pydantic, Uvicorn |
+| Extension | JavaScript, HTML, CSS, Chrome Manifest V3 |
+| Conteneurisation | Docker |
+| Cloud | GitHub Codespaces |
+| Tests et versioning | Pytest, Git, GitHub |
 
-### Clone the repository
+## 3. Données et performances
+
+Corpus : [Reddit Sentiment Analysis](https://github.com/Himanshu-1703/reddit-sentiment-analysis). Les étiquettes sont `-1` (négatif), `0` (neutre) et `1` (positif).
+
+| Données | Effectif |
+|---|---:|
+| Corpus initial | 37 249 |
+| Après nettoyage et déduplication | 36 607 |
+| Entraînement | 29 285 |
+| Test | 7 322 |
+
+Le découpage entraînement/test est stratifié (80/20, `random_state=42`). Le modèle final utilise un vectoriseur TF-IDF (20 000 caractéristiques, unigrammes et bigrammes) et une régression logistique (`C=5`, `class_weight=balanced`, `max_iter=1000`).
+
+| Mesure | Résultat |
+|---|---:|
+| Accuracy sur le test Reddit | **87,50 %** |
+| F1-score macro | **0,86** |
+| F1 négatif / neutre / positif | 0,80 / 0,91 / 0,88 |
+| Inférence locale pour 50 commentaires | 6,65 ms en moyenne |
+| Réponse HTTP locale pour 50 commentaires | 19,84 ms en moyenne (nouvelle mesure) |
+
+La mesure HTTP historique était de 21,93 ms. Ces temps ont été mesurés localement et **ne représentent pas la latence cloud**.
+
+![Répartition des sentiments](reports/figures/sentiment_distribution.png)
+
+![Matrice de confusion](reports/figures/confusion_matrix.png)
+
+## 4. Installation locale
+
+Prérequis : **Git**, **Docker Desktop** et **Google Chrome**. Python 3.11 est nécessaire pour exécuter directement les scripts.
 
 ```bash
-git clone <REPOSITORY_URL>
-cd <PROJECT_DIRECTORY>
+git clone https://github.com/Bouch-Anass/youtube-sentiment-analyzer.git
+cd youtube-sentiment-analyzer
+docker build -t youtube-sentiment-api .
+docker run --rm -p 7860:7860 youtube-sentiment-api
 ```
 
-Replace the placeholders with the actual GitHub URL and folder name.
+API locale : http://127.0.0.1:7860
 
-### Python environment
+Documentation interactive : http://127.0.0.1:7860/docs
+
+Pour lancer l'API directement avec Python sous Windows :
 
 ```powershell
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-```
-
-### Run the API locally
-
-```powershell
 python -m uvicorn src.api.app:app --reload
 ```
 
-The API runs at:
+Cette dernière commande utilise le port **8000**.
 
-http://127.0.0.1:8000
+## 5. Déploiement avec GitHub Codespaces
 
-### Run with Docker
+1. Sur le dépôt, ouvrir **Code → Codespaces** et créer ou reprendre un Codespace.
+2. Dans son terminal, exécuter :
 
-```powershell
+```bash
 docker build -t youtube-sentiment-api .
-docker run --rm -p 7860:7860 youtube-sentiment-api
+docker run -d --name youtube-sentiment-api -p 7860:7860 youtube-sentiment-api
+curl http://localhost:7860/health
 ```
 
-Docker API:
+3. Dans l'onglet **Ports**, définir la visibilité de `7860` sur **Public**.
+4. Copier l'URL HTTPS générée et vérifier les routes `/health` et `/docs`.
 
-http://127.0.0.1:7860
+URL utilisée lors du projet :
 
-API documentation:
+`https://glowing-potato-q754xg7x4vjfxq56-7860.app.github.dev`
 
-http://127.0.0.1:7860/docs
+> Codespaces n'est pas un hébergement permanent. L'API ne répond que si le Codespace et le conteneur sont actifs. Après une reprise, vérifier le port public et l'URL.
 
-## 8. Chrome Extension Installation
+## 6. Installation et utilisation de l'extension
 
-1. Open Chrome.
-2. Navigate to chrome://extensions.
-3. Enable Developer mode.
-4. Click Load unpacked.
-5. Select the chrome-extension folder.
-6. Open a YouTube video and load its comments.
-7. Click Analyze Comments.
+1. Ouvrir `chrome://extensions` et activer le **Mode développeur**.
+2. Cliquer sur **Charger l'extension non empaquetée** (*Load unpacked*).
+3. Sélectionner le dossier `chrome-extension/`.
+4. Ouvrir une vidéo YouTube et faire défiler la page pour charger les commentaires.
+5. Ouvrir **YouTube Sentiment Analyzer**, puis cliquer sur **Analyze Comments**.
 
-The extension currently uses the local Docker API on port 7860.
+L'extension affiche les proportions par sentiment, les prédictions et les scores de confiance. Elle propose des **filtres**, un **mode sombre/clair**, la **copie** des résultats et leur **export CSV**.
 
-### Features
+**Configuration de l'API :** `chrome-extension/popup.js` appelle actuellement l'URL HTTPS de Codespaces. Pour utiliser Docker en local, remplacer cette URL par `http://127.0.0.1:7860/predict_batch`, puis recharger l'extension. Les deux hôtes figurent dans `manifest.json`. Il n'y a pas de basculement automatique.
 
-- Comment extraction
-- Sentiment classification
-- Confidence scores
-- Sentiment distribution charts
-- Sentiment filters
-- Dark and light themes
-- Copy results
-- CSV export
+## 7. API et tests
 
-## 9. Testing
+| Route | Méthode | Rôle |
+|---|---|---|
+| `/health` | GET | Vérifier le démarrage de l'API et le chargement du modèle |
+| `/predict_batch` | POST | Analyser une liste de commentaires et renvoyer les statistiques |
+| `/docs` | GET | Accéder à la documentation interactive |
 
-The application was tested using Pytest and manual browser tests.
+Exemple de requête :
 
-API unit tests: 5 passed.
+```json
+{
+  "comments": [
+    "This video is amazing",
+    "This is terrible",
+    "The video was uploaded yesterday"
+  ]
+}
+```
 
-Docker API integration tests: 8 passed.
+Pour exécuter les tests sous Windows avec l'environnement Python activé et le conteneur local sur le port 7860 :
 
-Test scenarios included:
-- Different batch sizes
-- Invalid requests
-- Empty comments
-- Long comments
-- Emojis
-- Mixed-language inputs
+```powershell
+python -m pytest tests/test_api.py tests/test_docker_api.py -v
+```
 
-## 10. Limitations
+**Résultat enregistré : 13 tests réussis** (5 tests API et 8 tests d'intégration Docker). Les tests couvrent notamment les tailles de lot, les entrées invalides et plusieurs cas limites.
 
-- The model was trained on Reddit comments rather than YouTube comments.
-- Sentiment predictions may be less reliable on slang, sarcasm, emojis, and mixed-language text.
-- YouTube loads comments dynamically, so extraction is limited to comments currently loaded on the page.
-- The application currently runs locally using Docker.
-- Cloud deployment remains pending.
+## 8. Limites et améliorations possibles
 
-## 11. Future Improvements
+- Le modèle a été entraîné sur des commentaires Reddit, et non sur un corpus YouTube étiqueté.
+- Les résultats peuvent être moins fiables sur le sarcasme, les emojis et les langues mélangées.
+- L'extraction dépend du chargement dynamique des commentaires dans YouTube.
+- L'API est accessible publiquement pendant la démonstration, sans authentification ni limitation de débit.
+- Pour aller plus loin : évaluation sur YouTube, traitement multilingue, lots bornés et hébergement permanent.
 
-- Train or fine-tune on YouTube-specific datasets.
-- Improve multilingual sentiment classification.
-- Support larger comment collections.
-- Add more advanced monitoring and logging.
-- Deploy the API to a cloud hosting service.
-
-
-## 12. Project Status
-
-The application is operational in both local and cloud environments.
-
-- Local deployment: Docker Desktop
-- Cloud deployment: GitHub Codespaces
-- Cloud API: HTTPS on port 7860
-- Chrome extension: Connected to the cloud API
-- Model accuracy: 87.50%
-- Automated API tests: 13 passed
-
-The Codespaces deployment is temporary and requires
-the Codespace to be running.
-
-
-## 13. Cloud Deployment (GitHub Codespaces)
-
-The FastAPI application is containerized with Docker and
-deployed using GitHub Codespaces.
-
-### Deployment
-
-1. Open the GitHub repository.
-2. Select Code > Codespaces > Create codespace on main.
-3. Build the Docker image:
-
-    docker build -t youtube-sentiment-api .
-
-4. Start the container:
-
-    docker run -d --name youtube-sentiment-api -p 7860:7860 youtube-sentiment-api
-
-5. Open the Ports tab.
-6. Set port 7860 visibility to Public.
-7. Copy the generated HTTPS URL.
-
-### API Endpoints
-
-Cloud API:
-
-https://glowing-potato-q754xg7x4vjfxq56-7860.app.github.dev
-
-- GET /health
-- POST /predict_batch
-- GET /docs
-
-### Chrome Extension
-
-The extension communicates with the public API through
-HTTPS.
-
-The production URL is configured in popup.js and
-authorized in manifest.json.
-
-### Availability
-
-GitHub Codespaces is an ephemeral development
-environment, not permanent production hosting.
-
-The API is available while the Codespace and Docker
-container are running.
-
-After a Codespace restart, verify the container,
-port visibility, and API URL before using the extension.
+**État du projet :** modèle et extension opérationnels ; déploiement local et déploiement Codespaces testés. Le Codespace doit être démarré pour utiliser l'API cloud.
