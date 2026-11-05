@@ -146,12 +146,4 @@ python -m pytest tests/test_api.py tests/test_docker_api.py -v
 
 **Résultat enregistré : 13 tests réussis** (5 tests API et 8 tests d'intégration Docker). Les tests couvrent notamment les tailles de lot, les entrées invalides et plusieurs cas limites.
 
-## 8. Limites et améliorations possibles
-
-- Le modèle a été entraîné sur des commentaires Reddit, et non sur un corpus YouTube étiqueté.
-- Les résultats peuvent être moins fiables sur le sarcasme, les emojis et les langues mélangées.
-- L'extraction dépend du chargement dynamique des commentaires dans YouTube.
-- L'API est accessible publiquement pendant la démonstration, sans authentification ni limitation de débit.
-- Pour aller plus loin : évaluation sur YouTube, traitement multilingue, lots bornés et hébergement permanent.
-
 **État du projet :** modèle et extension opérationnels ; déploiement local et déploiement Codespaces testés. Le Codespace doit être démarré pour utiliser l'API cloud.
