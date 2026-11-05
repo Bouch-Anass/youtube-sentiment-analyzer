@@ -118,6 +118,16 @@ L'extension affiche les proportions par sentiment, les prédictions et les score
 
 **Configuration de l'API :** `chrome-extension/popup.js` appelle actuellement l'URL HTTPS de Codespaces. Pour utiliser Docker en local, remplacer cette URL par `http://127.0.0.1:7860/predict_batch`, puis recharger l'extension. Les deux hôtes figurent dans `manifest.json`. Il n'y a pas de basculement automatique.
 
+### Captures de démonstration
+
+**Analyse des commentaires et répartition des sentiments**
+
+![Analyse des sentiments dans l'extension Chrome](docs/screenshots/extension_analyse.png)
+
+**Filtrage des sentiments et interface sombre**
+
+![Filtre de sentiments dans l'extension Chrome](docs/screenshots/extension_filtres.png)
+
 ## 7. API et tests
 
 | Route | Méthode | Rôle |
